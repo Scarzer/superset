@@ -34,6 +34,7 @@ import RoseChartPlugin from '@superset-ui/legacy-plugin-chart-rose';
 import TableChartPlugin from '@superset-ui/plugin-chart-table';
 import { WordCloudChartPlugin } from '@superset-ui/plugin-chart-word-cloud';
 import WorldMapChartPlugin from '@superset-ui/legacy-plugin-chart-world-map';
+import SelectionTableChartPlugin from 'plugins/plugin-chart-selectiontable/src';
 import {
   BubbleChartPlugin,
   BulletChartPlugin,
@@ -192,6 +193,7 @@ export default class MainPreset extends Preset {
         new DeckglLayerVisibilityCustomizationPlugin().configure({
           key: ChartCustomizationPlugins.DeckglLayerVisibility,
         }),
+        new SelectionTableChartPlugin().configure({ key: 'selection_table' }),
         new EchartsTreeChartPlugin().configure({ key: VizType.Tree }),
         new EchartsSunburstChartPlugin().configure({ key: VizType.Sunburst }),
         new HandlebarsChartPlugin().configure({ key: VizType.Handlebars }),
