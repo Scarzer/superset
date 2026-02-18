@@ -31,6 +31,7 @@ export {
 export { default as NumberFormatterRegistry } from './NumberFormatterRegistry';
 export { default as createD3NumberFormatter } from './factories/createD3NumberFormatter';
 export { default as createDurationFormatter } from './factories/createDurationFormatter';
+export { default as createEngineeringFormatter } from './factories/createEngineeringFormatter';
 export { default as createMemoryFormatter } from './factories/createMemoryFormatter';
 export { default as createSiAtMostNDigitFormatter } from './factories/createSiAtMostNDigitFormatter';
 export { default as createSmartNumberFormatter } from './factories/createSmartNumberFormatter';
