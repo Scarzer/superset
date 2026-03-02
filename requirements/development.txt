@@ -115,7 +115,7 @@ certifi==2025.6.15
     #   httpx
     #   requests
     #   selenium
-cffi==1.17.1
+cffi
     # via
     #   -c requirements/base-constraint.txt
     #   cryptography
@@ -177,7 +177,7 @@ croniter==6.0.0
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
-cryptography==44.0.3
+cryptography==46
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
@@ -375,7 +375,7 @@ googleapis-common-protos==1.66.0
     # via
     #   google-api-core
     #   grpcio-status
-greenlet==3.1.1
+greenlet
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
@@ -630,7 +630,7 @@ packaging==25.0
     #   pytest
     #   shillelagh
     #   sqlalchemy-bigquery
-pandas==2.1.4
+pandas==2.3.3
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
@@ -720,7 +720,7 @@ py-key-value-aio==0.3.0
     #   pydocket
 py-key-value-shared==0.3.0
     # via py-key-value-aio
-pyarrow==16.1.0
+pyarrow==19.1.0
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
@@ -786,7 +786,7 @@ pynacl==1.5.0
     # via
     #   -c requirements/base-constraint.txt
     #   paramiko
-pyopenssl==25.1.0
+pyopenssl
     # via
     #   -c requirements/base-constraint.txt
     #   shillelagh
