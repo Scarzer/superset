@@ -916,10 +916,19 @@ class XYChartConfig(UnknownFieldCheckMixin):
             "group_by", "groupby", "series", "breakdown", "dimension"
         ),
     )
-    x_axis: AxisConfig | None = None
-    y_axis: AxisConfig | None = None
-    legend: LegendConfig | None = None
-    filters: List[FilterConfig] | None = Field(
+    orientation: Literal["vertical", "horizontal"] | None = Field(
+        None,
+        description=(
+            "Bar chart orientation. Only applies when kind='bar'. "
+            "'vertical' (default): bars extend upward. "
+            "'horizontal': bars extend rightward, useful for long category names."
+        ),
+    )
+    stacked: bool = Field(
+        False,
+        description="Stack bars/areas on top of each other instead of side-by-side",
+    )
+    group_by: ColumnRef | None = Field(
         None,
         description="Structured filters (column/op/value). "
         "Do NOT use adhoc_filters or raw SQL expressions.",

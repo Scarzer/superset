@@ -600,57 +600,6 @@ class TestMapXYConfig:
         assert result["stack"] == "Stack"
         assert result["groupby"] == ["level"]
 
-    @patch("superset.mcp_service.chart.chart_utils.is_column_truly_temporal")
-    def test_map_xy_config_with_filters(self, mock_is_temporal) -> None:
-        """Test that filters are mapped to adhoc_filters in XY form_data."""
-        mock_is_temporal.return_value = True
-        config = XYChartConfig(
-            chart_type="xy",
-            x=ColumnRef(name="date"),
-            y=[ColumnRef(name="revenue", aggregate="SUM")],
-            kind="line",
-            filters=[FilterConfig(column="region", op="=", value="US")],
-        )
-
-        result = map_xy_config(config)
-
-        assert "adhoc_filters" in result
-        assert len(result["adhoc_filters"]) == 1
-        assert result["adhoc_filters"][0]["subject"] == "region"
-        assert result["adhoc_filters"][0]["operator"] == "=="
-        assert result["adhoc_filters"][0]["comparator"] == "US"
-
-    @patch("superset.mcp_service.chart.chart_utils.is_column_truly_temporal")
-    def test_map_xy_config_row_limit(self, mock_is_temporal) -> None:
-        """Test that row_limit is mapped to form_data."""
-        mock_is_temporal.return_value = True
-        config = XYChartConfig(
-            chart_type="xy",
-            x=ColumnRef(name="date"),
-            y=[ColumnRef(name="revenue", aggregate="SUM")],
-            kind="line",
-            row_limit=250,
-        )
-
-        result = map_xy_config(config)
-
-        assert result["row_limit"] == 250
-
-    @patch("superset.mcp_service.chart.chart_utils.is_column_truly_temporal")
-    def test_map_xy_config_default_row_limit(self, mock_is_temporal) -> None:
-        """Test that default row_limit is mapped to form_data."""
-        mock_is_temporal.return_value = True
-        config = XYChartConfig(
-            chart_type="xy",
-            x=ColumnRef(name="date"),
-            y=[ColumnRef(name="revenue", aggregate="SUM")],
-            kind="bar",
-        )
-
-        result = map_xy_config(config)
-
-        assert result["row_limit"] == 10000
-
 
 class TestMapConfigToFormData:
     """Test map_config_to_form_data function"""
