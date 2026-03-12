@@ -123,15 +123,7 @@ def _compile_chart(
         return CompileResult(success=False, error=str(exc))
 
 
-@tool(
-    tags=["mutate"],
-    class_permission_name="Chart",
-    annotations=ToolAnnotations(
-        title="Create chart",
-        readOnlyHint=False,
-        destructiveHint=False,
-    ),
-)
+@tool(tags=["mutate"], class_permission_name="Chart")
 @parse_request(GenerateChartRequest)
 async def generate_chart(  # noqa: C901
     request: GenerateChartRequest, ctx: Context

@@ -179,15 +179,7 @@ def _generate_title_from_charts(chart_objects: List[Any]) -> str:
     return title
 
 
-@tool(
-    tags=["mutate"],
-    class_permission_name="Dashboard",
-    annotations=ToolAnnotations(
-        title="Create dashboard",
-        readOnlyHint=False,
-        destructiveHint=False,
-    ),
-)
+@tool(tags=["mutate"], class_permission_name="Dashboard")
 @parse_request(GenerateDashboardRequest)
 def generate_dashboard(
     request: GenerateDashboardRequest, ctx: Context

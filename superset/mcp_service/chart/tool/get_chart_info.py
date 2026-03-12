@@ -56,74 +56,7 @@ def _get_cached_form_data(form_data_key: str) -> str | None:
         return None
 
 
-def _build_unsaved_chart_info(form_data_key: str) -> ChartInfo | ChartError:
-    """Build a ChartInfo from cached form_data when no chart identifier exists."""
-    from superset.utils import json as utils_json
-
-    cached_form_data = _get_cached_form_data(form_data_key)
-    if not cached_form_data:
-        return ChartError(
-            error="No cached chart data found for form_data_key. "
-            "The cache may have expired.",
-            error_type="NotFound",
-        )
-    try:
-        form_data = utils_json.loads(cached_form_data)
-    except (TypeError, ValueError) as e:
-        return ChartError(
-            error=f"Failed to parse cached form_data: {e}",
-            error_type="ParseError",
-        )
-    if not isinstance(form_data, dict):
-        return ChartError(
-            error="Cached form_data is not a valid JSON object.",
-            error_type="ParseError",
-        )
-    return ChartInfo(
-        viz_type=form_data.get("viz_type"),
-        datasource_name=form_data.get("datasource_name"),
-        datasource_type=form_data.get("datasource_type"),
-        form_data=form_data,
-        form_data_key=form_data_key,
-        is_unsaved_state=True,
-    )
-
-
-def _apply_unsaved_state_override(result: ChartInfo, form_data_key: str) -> None:
-    """Override a ChartInfo's form_data with cached unsaved state."""
-    from superset.utils import json as utils_json
-
-    if cached_form_data := _get_cached_form_data(form_data_key):
-        try:
-            result.form_data = utils_json.loads(cached_form_data)
-            result.form_data_key = form_data_key
-            result.is_unsaved_state = True
-
-            # Update viz_type from cached form_data if present
-            if result.form_data and "viz_type" in result.form_data:
-                result.viz_type = result.form_data["viz_type"]
-        except (TypeError, ValueError) as e:
-            logger.warning(
-                "Failed to parse cached form_data: %s. "
-                "Using saved chart configuration.",
-                e,
-            )
-    else:
-        logger.warning(
-            "form_data_key provided but no cached data found. "
-            "The cache may have expired. Using saved chart configuration."
-        )
-
-
-@tool(
-    tags=["discovery"],
-    class_permission_name="Chart",
-    annotations=ToolAnnotations(
-        title="Get chart info",
-        readOnlyHint=True,
-        destructiveHint=False,
-    ),
-)
+@tool(tags=["discovery"], class_permission_name="Chart")
 @parse_request(GetChartInfoRequest)
 async def get_chart_info(
     request: GetChartInfoRequest, ctx: Context
