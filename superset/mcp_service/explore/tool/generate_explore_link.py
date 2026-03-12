@@ -39,15 +39,7 @@ from superset.mcp_service.chart.schemas import (
 from superset.mcp_service.utils.schema_utils import parse_request
 
 
-@tool(
-    tags=["explore"],
-    class_permission_name="Explore",
-    annotations=ToolAnnotations(
-        title="Generate explore link",
-        readOnlyHint=False,
-        destructiveHint=False,
-    ),
-)
+@tool(tags=["explore"], class_permission_name="Explore")
 @parse_request(GenerateExploreLinkRequest)
 async def generate_explore_link(
     request: GenerateExploreLinkRequest, ctx: Context

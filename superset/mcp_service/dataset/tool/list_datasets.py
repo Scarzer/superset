@@ -61,15 +61,7 @@ SORTABLE_DATASET_COLUMNS = [
 ]
 
 
-@tool(
-    tags=["core"],
-    class_permission_name="Dataset",
-    annotations=ToolAnnotations(
-        title="List datasets",
-        readOnlyHint=True,
-        destructiveHint=False,
-    ),
-)
+@tool(tags=["core"], class_permission_name="Dataset")
 @parse_request(ListDatasetsRequest)
 async def list_datasets(request: ListDatasetsRequest, ctx: Context) -> DatasetList:
     """List datasets with filtering and search.
