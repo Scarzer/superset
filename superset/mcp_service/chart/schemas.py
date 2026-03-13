@@ -522,7 +522,6 @@ class FilterConfig(BaseModel):
         min_length=1,
         max_length=255,
         pattern=r"^[a-zA-Z0-9_][a-zA-Z0-9_\s\-\.]*$",
-        validation_alias=AliasChoices("column", "col"),
     )
     op: Literal[
         "=",
@@ -539,12 +538,10 @@ class FilterConfig(BaseModel):
     ] = Field(
         ...,
         description="LIKE/ILIKE use % wildcards. IN/NOT IN take a list.",
-        validation_alias=AliasChoices("op", "operator", "opr"),
     )
     value: str | int | float | bool | list[str | int | float | bool] = Field(
         ...,
         description="For IN/NOT IN, provide a list.",
-        validation_alias=AliasChoices("value", "val"),
     )
 
     @field_validator("column")
@@ -586,11 +583,7 @@ class PieChartConfig(UnknownFieldCheckMixin):
     model_config = ConfigDict(extra="ignore", populate_by_name=True)
 
     chart_type: Literal["pie"] = "pie"
-    dimension: ColumnRef = Field(
-        ...,
-        description="Category column for slices",
-        validation_alias=AliasChoices("dimension", "groupby"),
-    )
+    dimension: ColumnRef = Field(..., description="Category column for slices")
     metric: ColumnRef = Field(
         ..., description="Value metric (needs aggregate e.g. SUM, COUNT)"
     )
@@ -607,11 +600,7 @@ class PieChartConfig(UnknownFieldCheckMixin):
     ] = "key_value_percent"
     sort_by_metric: bool = True
     show_legend: bool = True
-    filters: List[FilterConfig] | None = Field(
-        None,
-        description="Structured filters (column/op/value). "
-        "Do NOT use adhoc_filters or raw SQL expressions.",
-    )
+    filters: List[FilterConfig] | None = None
     row_limit: int = Field(100, description="Max slices", ge=1, le=10000)
     number_format: str = Field("SMART_NUMBER", max_length=50)
     show_total: bool = Field(False, description="Show total in center")
@@ -626,12 +615,7 @@ class PivotTableChartConfig(UnknownFieldCheckMixin):
     model_config = ConfigDict(extra="ignore", populate_by_name=True)
 
     chart_type: Literal["pivot_table"] = "pivot_table"
-    rows: List[ColumnRef] = Field(
-        ...,
-        min_length=1,
-        description="Row grouping columns",
-        validation_alias=AliasChoices("rows", "groupby", "dimension"),
-    )
+    rows: List[ColumnRef] = Field(..., min_length=1, description="Row grouping columns")
     columns: List[ColumnRef] | None = Field(
         None, description="Column groups for cross-tabulation"
     )
@@ -657,11 +641,7 @@ class PivotTableChartConfig(UnknownFieldCheckMixin):
     show_column_totals: bool = True
     transpose: bool = False
     combine_metric: bool = Field(False, description="Metrics side by side in columns")
-    filters: List[FilterConfig] | None = Field(
-        None,
-        description="Structured filters (column/op/value). "
-        "Do NOT use adhoc_filters or raw SQL expressions.",
-    )
+    filters: List[FilterConfig] | None = None
     row_limit: int = Field(10000, description="Max cells", ge=1, le=50000)
     value_format: str = Field("SMART_NUMBER", max_length=50)
 
@@ -670,60 +650,26 @@ class MixedTimeseriesChartConfig(UnknownFieldCheckMixin):
     model_config = ConfigDict(extra="ignore", populate_by_name=True)
 
     chart_type: Literal["mixed_timeseries"] = "mixed_timeseries"
-    x: ColumnRef = Field(
-        ...,
-        description="Shared temporal X-axis column",
-        validation_alias=AliasChoices("x", "x_axis"),
-    )
-    time_grain: TimeGrain | None = Field(
-        None,
-        description="PT1H, P1D, P1W, P1M, P1Y",
-        validation_alias=AliasChoices("time_grain", "time_grain_sqla"),
-    )
+    x: ColumnRef = Field(..., description="Shared temporal X-axis column")
+    time_grain: TimeGrain | None = Field(None, description="PT1H, P1D, P1W, P1M, P1Y")
     # Primary series (Query A)
-    y: List[ColumnRef] = Field(
-        ...,
-        min_length=1,
-        description="Primary Y-axis metrics",
-        validation_alias=AliasChoices("y", "metrics"),
-    )
+    y: List[ColumnRef] = Field(..., min_length=1, description="Primary Y-axis metrics")
     primary_kind: Literal["line", "bar", "area", "scatter"] = "line"
-    group_by: List[ColumnRef] | None = Field(
-        None,
-        description="Primary series group by",
-        validation_alias=AliasChoices("group_by", "groupby", "series", "dimension"),
-    )
+    group_by: ColumnRef | None = Field(None, description="Primary series group by")
     # Secondary series (Query B)
     y_secondary: List[ColumnRef] = Field(
-        ...,
-        min_length=1,
-        description="Secondary Y-axis metrics",
-        validation_alias=AliasChoices("y_secondary", "metrics_b"),
+        ..., min_length=1, description="Secondary Y-axis metrics"
     )
     secondary_kind: Literal["line", "bar", "area", "scatter"] = "bar"
-    group_by_secondary: List[ColumnRef] | None = Field(
-        None,
-        description="Secondary series group by",
-        validation_alias=AliasChoices(
-            "group_by_secondary", "groupby_b", "groupby_secondary"
-        ),
+    group_by_secondary: ColumnRef | None = Field(
+        None, description="Secondary series group by"
     )
     # Display options
     show_legend: bool = True
     x_axis: AxisConfig | None = None
     y_axis: AxisConfig | None = None
     y_axis_secondary: AxisConfig | None = None
-    filters: List[FilterConfig] | None = Field(
-        None,
-        description="Structured filters (column/op/value). "
-        "Do NOT use adhoc_filters or raw SQL expressions.",
-    )
-    row_limit: int = Field(10000, description="Max data points", ge=1, le=50000)
-
-    @field_validator("group_by", "group_by_secondary", mode="before")
-    @classmethod
-    def wrap_single_group_by(cls, v: Any) -> Any:
-        return _normalize_group_by_input(v)
+    filters: List[FilterConfig] | None = None
 
 
 class HandlebarsChartConfig(UnknownFieldCheckMixin):
@@ -840,18 +786,9 @@ class TableChartConfig(UnknownFieldCheckMixin):
         ...,
         min_length=1,
         description="Columns with unique labels",
-        validation_alias=AliasChoices("columns", "all_columns", "groupby"),
     )
-    filters: List[FilterConfig] | None = Field(
-        None,
-        description="Structured filters (column/op/value). "
-        "Do NOT use adhoc_filters or raw SQL expressions.",
-    )
-    sort_by: List[str] | None = Field(
-        None,
-        validation_alias=AliasChoices("sort_by", "order_by_cols", "order_by"),
-    )
-    row_limit: int = Field(1000, description="Max rows returned", ge=1, le=50000)
+    filters: List[FilterConfig] | None = None
+    sort_by: List[str] | None = None
 
     @model_validator(mode="after")
     def validate_unique_column_labels(self) -> "TableChartConfig":
@@ -885,16 +822,9 @@ class XYChartConfig(UnknownFieldCheckMixin):
     model_config = ConfigDict(extra="ignore", populate_by_name=True)
 
     chart_type: Literal["xy"] = "xy"
-    x: ColumnRef = Field(
-        ...,
-        description="X-axis column",
-        validation_alias=AliasChoices("x", "x_axis", "x_column"),
-    )
+    x: ColumnRef = Field(..., description="X-axis column")
     y: List[ColumnRef] = Field(
-        ...,
-        min_length=1,
-        description="Y-axis metrics (unique labels)",
-        validation_alias=AliasChoices("y", "metrics"),
+        ..., min_length=1, description="Y-axis metrics (unique labels)"
     )
     kind: Literal["line", "bar", "area", "scatter"] = "line"
     time_grain: TimeGrain | None = Field(
@@ -905,40 +835,14 @@ class XYChartConfig(UnknownFieldCheckMixin):
     orientation: Literal["vertical", "horizontal"] | None = Field(
         None, description="Bar orientation (only for kind='bar')"
     )
-    stacked: bool = Field(
-        False,
-        validation_alias=AliasChoices("stacked", "stack"),
-    )
-    group_by: List[ColumnRef] | None = Field(
-        None,
-        description="Series breakdown columns",
-        validation_alias=AliasChoices(
-            "group_by", "groupby", "series", "breakdown", "dimension"
-        ),
-    )
-    orientation: Literal["vertical", "horizontal"] | None = Field(
-        None,
-        description=(
-            "Bar chart orientation. Only applies when kind='bar'. "
-            "'vertical' (default): bars extend upward. "
-            "'horizontal': bars extend rightward, useful for long category names."
-        ),
-    )
-    stacked: bool = Field(
-        False,
-        description="Stack bars/areas on top of each other instead of side-by-side",
-    )
+    stacked: bool = False
     group_by: ColumnRef | None = Field(
-        None,
-        description="Structured filters (column/op/value). "
-        "Do NOT use adhoc_filters or raw SQL expressions.",
+        None, description="Series breakdown column (not 'series')"
     )
-    row_limit: int = Field(10000, description="Max data points", ge=1, le=50000)
-
-    @field_validator("group_by", mode="before")
-    @classmethod
-    def wrap_single_group_by(cls, v: Any) -> Any:
-        return _normalize_group_by_input(v)
+    x_axis: AxisConfig | None = None
+    y_axis: AxisConfig | None = None
+    legend: LegendConfig | None = None
+    filters: List[FilterConfig] | None = None
 
     @model_validator(mode="after")
     def validate_unique_column_labels(self) -> "XYChartConfig":
