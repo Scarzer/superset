@@ -24,7 +24,13 @@ assists people when migrating to a new version.
 
 ## Next
 
-## 6.1.0
+### Deck.gl MapBox viewport and opacity controls are functional
+
+The Deck.gl MapBox chart's **Opacity**, **Default longitude**, **Default latitude**, and **Zoom** controls were previously non-functional — changing them had no effect on the rendered map. These controls are now wired up correctly.
+
+**Behavior change for existing charts:** Previously, the viewport controls had hard-coded default values (`-122.405293`, `37.772123`, zoom `11` — San Francisco) that were stored in each chart's `form_data` but never applied. The map always used `fitBounds` to center on the data. With this fix, those stored values are now respected, which means existing MapBox charts may open centered on the old default coordinates instead of fitting to data bounds.
+
+**To restore fit-to-data behavior:** Open the chart in Explore, clear the **Default longitude**, **Default latitude**, and **Zoom** fields in the Viewport section, and re-save the chart.
 
 ### ClickHouse minimum driver version bump
 
