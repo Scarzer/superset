@@ -63,7 +63,15 @@ SORTABLE_DASHBOARD_COLUMNS = [
 ]
 
 
-@tool(tags=["core"], class_permission_name="Dashboard")
+@tool(
+    tags=["core"],
+    class_permission_name="Dashboard",
+    annotations=ToolAnnotations(
+        title="List dashboards",
+        readOnlyHint=True,
+        destructiveHint=False,
+    ),
+)
 @parse_request(ListDashboardsRequest)
 async def list_dashboards(
     request: ListDashboardsRequest, ctx: Context
