@@ -46,7 +46,15 @@ from superset.utils import json
 logger = logging.getLogger(__name__)
 
 
-@tool(tags=["mutate"], class_permission_name="Chart")
+@tool(
+    tags=["mutate"],
+    class_permission_name="Chart",
+    annotations=ToolAnnotations(
+        title="Update chart",
+        readOnlyHint=False,
+        destructiveHint=True,
+    ),
+)
 @parse_request(UpdateChartRequest)
 async def update_chart(
     request: UpdateChartRequest, ctx: Context

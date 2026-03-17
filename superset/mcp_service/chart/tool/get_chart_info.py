@@ -115,7 +115,15 @@ def _apply_unsaved_state_override(result: ChartInfo, form_data_key: str) -> None
         )
 
 
-@tool(tags=["discovery"], class_permission_name="Chart")
+@tool(
+    tags=["discovery"],
+    class_permission_name="Chart",
+    annotations=ToolAnnotations(
+        title="Get chart info",
+        readOnlyHint=True,
+        destructiveHint=False,
+    ),
+)
 @parse_request(GetChartInfoRequest)
 async def get_chart_info(
     request: GetChartInfoRequest, ctx: Context

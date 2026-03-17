@@ -67,6 +67,7 @@ def create_tool_decorator(
     protect: bool = True,
     class_permission_name: Optional[str] = None,
     method_permission_name: Optional[str] = None,
+    annotations: ToolAnnotations | None = None,
 ) -> Callable[[F], F] | F:
     """
     Create the concrete MCP tool decorator implementation.
@@ -87,6 +88,7 @@ def create_tool_decorator(
             (e.g., "Chart", "Dashboard", "SQLLab"). Enables permission checking.
         method_permission_name: FAB action name (e.g., "read", "write").
             Defaults to "write" if tags has "mutate", else "read".
+        annotations: MCP tool annotations (title, readOnlyHint, destructiveHint, etc.)
 
     Returns:
         Decorator that registers and wraps the tool with optional authentication,
