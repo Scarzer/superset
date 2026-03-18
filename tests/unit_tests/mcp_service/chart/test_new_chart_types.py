@@ -531,6 +531,25 @@ class TestMixedTimeseriesChartConfigSchema:
         )
         assert config.row_limit == 500
 
+    def test_mixed_timeseries_default_row_limit(self) -> None:
+        config = MixedTimeseriesChartConfig(
+            chart_type="mixed_timeseries",
+            x=ColumnRef(name="date"),
+            y=[ColumnRef(name="revenue", aggregate="SUM")],
+            y_secondary=[ColumnRef(name="orders", aggregate="COUNT")],
+        )
+        assert config.row_limit == 10000
+
+    def test_mixed_timeseries_custom_row_limit(self) -> None:
+        config = MixedTimeseriesChartConfig(
+            chart_type="mixed_timeseries",
+            x=ColumnRef(name="date"),
+            y=[ColumnRef(name="revenue", aggregate="SUM")],
+            y_secondary=[ColumnRef(name="orders", aggregate="COUNT")],
+            row_limit=500,
+        )
+        assert config.row_limit == 500
+
 
 # ============================================================
 # Mixed Timeseries Form Data Mapping Tests
