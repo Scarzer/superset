@@ -349,27 +349,6 @@ def _add_adhoc_filters(
         ]
 
 
-def adhoc_filters_to_query_filters(
-    adhoc_filters: list[Dict[str, Any]],
-) -> list[Dict[str, Any]]:
-    """Convert adhoc filter format to QueryObject filter format.
-
-    Adhoc filters use ``{subject, operator, comparator}`` keys while
-    ``QueryContextFactory`` expects ``{col, op, val}`` (QueryObjectFilterClause).
-    """
-    result: list[Dict[str, Any]] = []
-    for f in adhoc_filters:
-        if f.get("expressionType") == "SIMPLE":
-            result.append(
-                {
-                    "col": f.get("subject"),
-                    "op": f.get("operator"),
-                    "val": f.get("comparator"),
-                }
-            )
-    return result
-
-
 def map_table_config(config: TableChartConfig) -> Dict[str, Any]:
     """Map table chart config to form_data with defensive validation."""
     # Early validation to prevent empty charts
@@ -600,6 +579,13 @@ def map_xy_config(
 
     _add_adhoc_filters(form_data, config.filters)
 
+    # Set the groupby in form_data only if we have valid columns
+    # Don't set empty groupby - let Superset handle x_axis grouping automatically
+    if groupby_columns:
+        form_data["groupby"] = groupby_columns
+
+    _add_adhoc_filters(form_data, config.filters)
+
     form_data["row_limit"] = config.row_limit
 
     # Add stacking configuration
@@ -807,6 +793,8 @@ def map_mixed_timeseries_config(
         ]
         if groupby_b:
             form_data["groupby_b"] = groupby_b
+
+    form_data["row_limit"] = config.row_limit
 
     form_data["row_limit"] = config.row_limit
 
