@@ -579,13 +579,6 @@ def map_xy_config(
 
     _add_adhoc_filters(form_data, config.filters)
 
-    # Set the groupby in form_data only if we have valid columns
-    # Don't set empty groupby - let Superset handle x_axis grouping automatically
-    if groupby_columns:
-        form_data["groupby"] = groupby_columns
-
-    _add_adhoc_filters(form_data, config.filters)
-
     form_data["row_limit"] = config.row_limit
 
     # Add stacking configuration
@@ -793,8 +786,6 @@ def map_mixed_timeseries_config(
         ]
         if groupby_b:
             form_data["groupby_b"] = groupby_b
-
-    form_data["row_limit"] = config.row_limit
 
     form_data["row_limit"] = config.row_limit
 
