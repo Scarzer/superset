@@ -700,7 +700,9 @@ class MixedTimeseriesChartConfig(UnknownFieldCheckMixin):
     group_by_secondary: List[ColumnRef] | None = Field(
         None,
         description="Secondary series group by",
-        validation_alias=AliasChoices("group_by_secondary", "groupby_b"),
+        validation_alias=AliasChoices(
+            "group_by_secondary", "groupby_b", "groupby_secondary"
+        ),
     )
     # Display options
     show_legend: bool = True
@@ -717,14 +719,7 @@ class MixedTimeseriesChartConfig(UnknownFieldCheckMixin):
     @field_validator("group_by", "group_by_secondary", mode="before")
     @classmethod
     def wrap_single_group_by(cls, v: Any) -> Any:
-        """Accept a single ColumnRef/dict/str and normalize to list of dicts."""
-        if isinstance(v, str):
-            return [{"name": v}]
-        if isinstance(v, (dict, ColumnRef)):
-            return [v]
-        if isinstance(v, list):
-            return [{"name": item} if isinstance(item, str) else item for item in v]
-        return v
+        return _normalize_group_by_input(v)
 
 
 class HandlebarsChartConfig(UnknownFieldCheckMixin):
@@ -924,14 +919,7 @@ class XYChartConfig(UnknownFieldCheckMixin):
     @field_validator("group_by", mode="before")
     @classmethod
     def wrap_single_group_by(cls, v: Any) -> Any:
-        """Accept a single ColumnRef/dict/str and normalize to list of dicts."""
-        if isinstance(v, str):
-            return [{"name": v}]
-        if isinstance(v, (dict, ColumnRef)):
-            return [v]
-        if isinstance(v, list):
-            return [{"name": item} if isinstance(item, str) else item for item in v]
-        return v
+        return _normalize_group_by_input(v)
 
     @model_validator(mode="after")
     def validate_unique_column_labels(self) -> "XYChartConfig":
