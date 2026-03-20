@@ -57,7 +57,7 @@ RUN npm ci \
   && rm -rf node_modules
 
 WORKDIR /home/superset/apache_superset-$VERSION
-RUN pip install --upgrade setuptools pip \
+RUN pip install --upgrade setuptools pip "wheel==0.46.2" "jaraco-context==6.0.1" \
   && pip install -r requirements/base.txt \
   && pip install --no-cache-dir .
 

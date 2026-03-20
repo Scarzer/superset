@@ -118,6 +118,7 @@ RUN pip install --no-cache-dir --upgrade uv
 # Using uv as it's faster/simpler than pip
 RUN uv venv /app/.venv
 ENV PATH="/app/.venv/bin:${PATH}"
+RUN uv pip install --upgrade "wheel==0.46.2" "jaraco-context==6.0.1" "psycopg2-binary==2.9.11" "gevent>1.4"
 
 ######################################################################
 # Python translation compiler layer
@@ -194,8 +195,7 @@ RUN /app/docker/apt-install.sh \
       libsasl2-modules-gssapi-mit \
       libpq-dev \
       libecpg-dev \
-      libldap2-dev \
-      python3-wheel 
+      libldap2-dev
 
 # Create data directory for DuckDB examples database
 # The database file will be created at runtime when examples are loaded from Parquet files
