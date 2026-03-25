@@ -1,0 +1,32 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches: 
+      - "main"
+      - "[0-9].[0-9]*"
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build-push-deploy-image:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} )"
+        uses: actions/checkout@4
+      - name: Log into DigitalOcean Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: registry.digitalocean.com
+          username: ${{ secrets.DOCR_USERNAME }}
+          password: ${{ secrets.DOCR_PAT }}
+      - name: Set up Docker Buildx
+        uses: docker/build-push-action@v6.5.0
+        with:
+          context: .
+          push: true
+          tags: registry.digitalocean.com/strathmite/superset:latest
