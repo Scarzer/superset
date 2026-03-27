@@ -88,6 +88,7 @@ import { HandlebarsChartPlugin } from '@superset-ui/plugin-chart-handlebars';
 import { ChartCustomizationPlugins, FilterPlugins } from 'src/constants';
 import AgGridTableChartPlugin from '@superset-ui/plugin-chart-ag-grid-table';
 import TimeTableChartPlugin from '../TimeTable';
+import SelectionTableChartPlugin from '@superset-ui/plugin-chart-selectiontable';
 
 export default class MainPreset extends Preset {
   constructor() {
@@ -192,6 +193,7 @@ export default class MainPreset extends Preset {
         new DeckglLayerVisibilityCustomizationPlugin().configure({
           key: ChartCustomizationPlugins.DeckglLayerVisibility,
         }),
+        new SelectionTableChartPlugin().configure({ key: 'selection_table' }),
         new EchartsTreeChartPlugin().configure({ key: VizType.Tree }),
         new EchartsSunburstChartPlugin().configure({ key: VizType.Sunburst }),
         new HandlebarsChartPlugin().configure({ key: VizType.Handlebars }),

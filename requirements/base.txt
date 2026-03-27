@@ -103,6 +103,7 @@ email-validator==2.2.0
     # via flask-appbuilder
 et-xmlfile==2.0.0
     # via openpyxl
+gevent==24.2.1
 filelock==3.20.3
     # via -r requirements/base.in
 flask==2.3.3
@@ -291,6 +292,7 @@ prison==0.2.1
     # via flask-appbuilder
 prompt-toolkit==3.0.51
     # via click-repl
+psycopg2-binary==2.9.7
 pyarrow==18.1.0
     # via apache-superset (pyproject.toml)
 pyasn1==0.6.2
