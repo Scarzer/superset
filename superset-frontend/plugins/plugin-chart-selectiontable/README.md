@@ -79,8 +79,10 @@ yarn start
 1) Create a new chart and select **Selection Table** from the visualization picker.
 2) Set **Row ID Column** (required) and **Emit Filter Column** (optional).
 3) Enable **Cross-Filter** (default on).
-4) Optional: Set **Redirect Dashboard** to enable the Navigate button. The dropdown loads the 25 most recently changed dashboards. Selected row IDs are appended as `selectedRowIds` (JSON array) in the query string.
-5) Use row checkboxes to select values; selection emits `IN (...)` filters to other charts on the dashboard.
+4) Optional: Set **Redirect Dashboard URL** to enable the Navigate button. Enter a dashboard URL or path such as `/superset/dashboard/1/`.
+5) Optional: Set **Redirect Filter Chart ID** to have Navigate write a Superset-compatible `preselect_filters` query parameter using the emitted filter column and selected values.
+6) If **Redirect Filter Chart ID** is left empty, the plugin falls back to appending the selected filter values as a JSON array under **Redirect Key**.
+7) Use row checkboxes to select values; selection emits `IN (...)` filters to other charts on the dashboard.
 
 ## Notes
 

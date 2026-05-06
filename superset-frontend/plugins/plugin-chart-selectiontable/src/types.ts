@@ -9,6 +9,7 @@ export interface SelectionTableFormData extends QueryFormData {
   showSearch: boolean;
   keepSelectionOnDataRefresh: boolean;
   redirectDashboardUrl?: string;
+  redirectFilterChartId?: string;
   redirectKey?: string;
 }
 

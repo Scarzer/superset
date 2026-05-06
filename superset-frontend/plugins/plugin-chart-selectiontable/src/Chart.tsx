@@ -64,7 +64,19 @@ function normalizeFilterValue(
     return value.toISOString();
   }
 
+  if (typeof value === 'bigint') {
+    return value.toString();
+  }
+
   return value;
+}
+
+function dedupeFilterValues(values: FilterValue[]): FilterValue[] {
+  return Array.from(
+    new Map(
+      values.map(value => [`${typeof value}:${String(value)}`, value]),
+    ).values(),
+  );
 }
 
 export default function SelectionTableChart(
@@ -88,6 +100,7 @@ export default function SelectionTableChart(
     showSearch,
     keepSelectionOnDataRefresh,
     redirectDashboardUrl,
+    redirectFilterChartId,
     redirectKey,
   } = formData;
 
@@ -208,12 +221,8 @@ export default function SelectionTableChart(
     return map;
   }, [rows, emitFilterColumn]);
 
-  const emitSelection = useCallback(
+  const getSelectedFilterValues = useCallback(
     (nextSet: Set<string>) => {
-      if (!enableCrossFilter || !setDataMask || !emitFilterColumn) {
-        return;
-      }
-
       const emittedValues: FilterValue[] =
         emitFilterColumn === rowIdColumn
           ? Array.from(nextSet)
@@ -221,14 +230,18 @@ export default function SelectionTableChart(
               .map(rowKey => emitValuesByRowKey.get(rowKey))
               .filter((value): value is FilterValue => value !== undefined);
 
-      const dedupedValues = Array.from(
-        new Map(
-          emittedValues.map(value => [
-            `${typeof value}:${String(value)}`,
-            value,
-          ]),
-        ).values(),
-      );
+      return dedupeFilterValues(emittedValues);
+    },
+    [emitFilterColumn, rowIdColumn, emitValuesByRowKey],
+  );
+
+  const emitSelection = useCallback(
+    (nextSet: Set<string>) => {
+      if (!enableCrossFilter || !setDataMask || !emitFilterColumn) {
+        return;
+      }
+
+      const dedupedValues = getSelectedFilterValues(nextSet);
 
       const signature = dedupedValues
         .map(value => `${typeof value}:${String(value)}`)
@@ -283,8 +296,7 @@ export default function SelectionTableChart(
       enableCrossFilter,
       setDataMask,
       emitFilterColumn,
-      rowIdColumn,
-      emitValuesByRowKey,
+      getSelectedFilterValues,
     ],
   );
 
@@ -337,23 +349,74 @@ export default function SelectionTableChart(
     }
 
     const selected = Array.from(selectedKeys);
-    if (selected.length === 0) {
-      return redirectDashboardUrl;
-    }
-
-    const payload = JSON.stringify(selected);
+    const selectedFilterValues = getSelectedFilterValues(selectedKeys);
+    const targetFilterChartId = redirectFilterChartId?.trim();
 
     try {
       const url = new URL(redirectDashboardUrl, window.location.origin);
-      url.searchParams.set(redirectKey || 'selectedRowIds', payload);
+
+      if (
+        targetFilterChartId &&
+        emitFilterColumn &&
+        selectedFilterValues.length > 0
+      ) {
+        url.searchParams.set(
+          'preselect_filters',
+          JSON.stringify({
+            [targetFilterChartId]: {
+              [emitFilterColumn]: selectedFilterValues,
+            },
+          }),
+        );
+        return url.toString();
+      }
+
+      if (targetFilterChartId) {
+        url.searchParams.delete('preselect_filters');
+      }
+
+      if (selected.length === 0) {
+        return url.toString();
+      }
+
+      url.searchParams.set(
+        redirectKey || 'selectedRowIds',
+        JSON.stringify(selectedFilterValues),
+      );
       return url.toString();
     } catch {
+      if (
+        targetFilterChartId &&
+        emitFilterColumn &&
+        selectedFilterValues.length > 0
+      ) {
+        const separator = redirectDashboardUrl.includes('?') ? '&' : '?';
+        return `${redirectDashboardUrl}${separator}preselect_filters=${encodeURIComponent(
+          JSON.stringify({
+            [targetFilterChartId]: {
+              [emitFilterColumn]: selectedFilterValues,
+            },
+          }),
+        )}`;
+      }
+
+      if (selected.length === 0) {
+        return redirectDashboardUrl;
+      }
+
       const separator = redirectDashboardUrl.includes('?') ? '&' : '?';
       return `${redirectDashboardUrl}${separator}${redirectKey || 'selectedRowIds'}=${encodeURIComponent(
-        payload,
+        JSON.stringify(selectedFilterValues),
       )}`;
     }
-  }, [redirectDashboardUrl, selectedKeys, redirectKey]);
+  }, [
+    redirectDashboardUrl,
+    selectedKeys,
+    getSelectedFilterValues,
+    redirectFilterChartId,
+    emitFilterColumn,
+    redirectKey,
+  ]);
 
   const onNavigate = useCallback(() => {
     const url = buildNavigateUrl();

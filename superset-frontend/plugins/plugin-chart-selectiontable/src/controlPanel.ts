@@ -6,37 +6,12 @@ import {
   ControlPanelConfig,
   ControlPanelState,
 } from '@superset-ui/chart-controls';
-import rison from 'rison';
 import { translate } from './translation';
 
 type DatasourceColumn = {
   column_name: string;
   verbose_name?: string;
 };
-
-type DashboardSummary = {
-  id: number;
-  dashboard_title: string;
-  url: string;
-  changed_on_delta_humanized?: string;
-};
-
-type DashboardListResponse = {
-  result?: DashboardSummary[];
-};
-
-const dashboardEndpoint = `/api/v1/dashboard/?q=${rison.encode({
-  order_column: 'changed_on_delta_humanized',
-  order_direction: 'desc',
-  page: 0,
-  page_size: 25,
-  select_columns: [
-    'id',
-    'dashboard_title',
-    'url',
-    'changed_on_delta_humanized',
-  ],
-})}`;
 
 function isDatasourceColumn(column: unknown): column is DatasourceColumn {
   return (
@@ -72,17 +47,6 @@ function validatePageSize(value: unknown): string | false {
   }
 
   return false;
-}
-
-function redirectDashboardMutator(response: DashboardListResponse) {
-  const dashboards = Array.isArray(response.result) ? response.result : [];
-
-  return dashboards.map(dashboard => ({
-    value: dashboard.url || `/superset/dashboard/${dashboard.id}/`,
-    label: dashboard.changed_on_delta_humanized
-      ? `${dashboard.dashboard_title} (${dashboard.changed_on_delta_humanized})`
-      : dashboard.dashboard_title,
-  }));
 }
 
 const config: ControlPanelConfig = {
@@ -186,21 +150,29 @@ const config: ControlPanelConfig = {
           {
             name: 'redirectDashboardUrl',
             config: {
-              type: 'SelectAsyncControl',
-              label: translate('Redirect Dashboard'),
+              type: 'TextControl',
+              label: translate('Redirect Dashboard URL'),
               default: undefined,
               renderTrigger: true,
-              allowClear: true,
-              multi: false,
-              dataEndpoint: dashboardEndpoint,
-              mutator: redirectDashboardMutator,
-              placeholder: translate('Select a dashboard'),
-              onAsyncErrorMessage: translate('Error while fetching dashboards'),
               description: translate(
-                'Optional dashboard to navigate to. Shows the 25 most recently changed dashboards you can access.',
+                'Optional dashboard URL or path to navigate to, such as /superset/dashboard/1/.',
               ),
             },
           },
+          {
+            name: 'redirectFilterChartId',
+            config: {
+              type: 'TextControl',
+              label: translate('Redirect Filter Chart ID'),
+              default: '',
+              renderTrigger: true,
+              description: translate(
+                'Optional dashboard filter chart id. When set, Navigate writes Superset preselect_filters for this chart and the emitted filter column.',
+              ),
+            },
+          },
+        ],
+        [
           {
             name: 'redirectKey',
             config: {
@@ -209,7 +181,7 @@ const config: ControlPanelConfig = {
               default: '',
               renderTrigger: true,
               description: translate(
-                'Optional query parameter key for selected row IDs in the redirect URL. Defaults to "selectedRowIds".',
+                'Fallback query parameter key when Redirect Filter Chart ID is not set. Defaults to "selectedRowIds".',
               ),
             },
           },
