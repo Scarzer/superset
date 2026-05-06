@@ -29,6 +29,7 @@ import {
   createSmartDateVerboseFormatter,
   createSmartDateDetailedFormatter,
   createMemoryFormatter,
+  createEngineeringFormatter,
 } from '@superset-ui/core';
 import { FormatLocaleDefinition } from 'd3-format';
 import { TimeLocaleDefinition } from 'd3-time-format';
@@ -84,6 +85,22 @@ export default function setupFormatters(
     )
     .registerValue('MEMORY_DECIMAL', createMemoryFormatter({ binary: false }))
     .registerValue('MEMORY_BINARY', createMemoryFormatter({ binary: true }))
+    .registerValue('ELECTRIC_AMPS', createEngineeringFormatter({ unit: 'A' }))
+    .registerValue('ELECTRIC_VOLTS', createEngineeringFormatter({ unit: 'V' }))
+    .registerValue('ELECTRIC_WATTS', createEngineeringFormatter({ unit: 'W' }))
+    .registerValue(
+      'ENERGY_WATT_HOURS',
+      createEngineeringFormatter({ unit: 'Wh' }),
+    )
+    .registerValue(
+      'ENERGY_AMP_HOURS',
+      createEngineeringFormatter({ unit: 'Ah' }),
+    )
+    .registerValue('ENERGY_JOULES', createEngineeringFormatter({ unit: 'J' }))
+    .registerValue(
+      'ELECTRIC_COULOMBS',
+      createEngineeringFormatter({ unit: 'C' }),
+    )
     .registerValue(
       'MEMORY_TRANSFER_RATE_DECIMAL',
       createMemoryFormatter({ binary: false, transfer: true }),

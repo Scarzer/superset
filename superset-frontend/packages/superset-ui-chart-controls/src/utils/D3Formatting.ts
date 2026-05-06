@@ -60,6 +60,13 @@ export const D3_FORMAT_OPTIONS: [string, string][] = [
   ['DURATION_COL', t('Duration in ms (10500 => 0:10.5)')],
   ['MEMORY_DECIMAL', t('Memory in bytes - decimal (1024B => 1.024kB)')],
   ['MEMORY_BINARY', t('Memory in bytes - binary (1024B => 1KiB)')],
+  ['ELECTRIC_AMPS', t('Amps (A)')],
+  ['ELECTRIC_VOLTS', t('Volts (V)')],
+  ['ELECTRIC_WATTS', t('Watts (W)')],
+  ['ENERGY_WATT_HOURS', t('Watt-hours (Wh)')],
+  ['ENERGY_AMP_HOURS', t('Amp-hours (Ah)')],
+  ['ENERGY_JOULES', t('Joules (J)')],
+  ['ELECTRIC_COULOMBS', t('Coulombs (C)')],
   [
     'MEMORY_TRANSFER_RATE_DECIMAL',
     t('Memory transfer rate in bytes - decimal (1024B => 1.024kB/s)'),
